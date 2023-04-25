@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="de.dis2023.data.Contract" abstract="true">
+		<id name="id" column="id">
+			<generator class="native" />
+		</id>
+		<property name="contractNo" type="int" column="contractNo" />
+		<property name="date" type="date" column="date" />
+		<property name="place" type="string" column="place" />
+		<many-to-one name="contractPartner" class="de.dis2023.data.Person" column="contractPartner" not-null="true" />
+
+		<union-subclass name="de.dis2023.data.TenancyContract" table="tenancyContract">
+			<property name="startDate" type="date" column="startDate" />
+			<property name="duration" type="integer" column="duration" />
+			<property name="additionalCosts" type="integer" column="additionalCosts" />
+			<one-to-one name="apartment" class="de.dis2023.data.Apartment" />
+		</union-subclass>
+
+		<union-subclass name="de.dis2023.data.PurchaseContract" table="purchaseContract">
+			<property name="noOfInstallments" type="integer" column="noOfInstallments" />
+			<property name="intrestRate" type="integer" column="intrestRate" />
+			<one-to-one name="house" class="de.dis2023.data.House" />
+		</union-subclass>
+	</class>
+</hibernate-mapping>
