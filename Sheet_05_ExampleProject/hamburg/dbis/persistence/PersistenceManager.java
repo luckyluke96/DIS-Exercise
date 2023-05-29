@@ -50,6 +50,19 @@ public class PersistenceManager {
     public void commit(int taid) {
         // TODO handle commits
 
+        // write EOT
+        try {
+            logSequenceNumber = readLSN() + 1;
+            String lsn = String.format("%04d", logSequenceNumber);
+            String name= "Logs/log_data.txt";
+            FileWriter fw = new FileWriter(name,true); //the true will append the new data
+            fw.write(lsn + ", " + taid + ", EOT\n");//appends the string to the file
+            fw.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
         // set commit to true in buffer for taid
         Collection<UserData> entries = buffer.values();
         for (UserData entry : entries) {
