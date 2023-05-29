@@ -4,13 +4,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 public class PersistenceManager {
 
     static final private PersistenceManager _manager;
 
-    static private Hashtable<Integer, Object> buffer;
+    static private Hashtable<Integer, UserData> buffer;
 
     // TODO Add class variables if necessary
     int transaction_id = 0;
@@ -29,7 +32,7 @@ public class PersistenceManager {
         // TODO Initialize class variables if necessary
 
 
-        buffer = new Hashtable<Integer, Object>();
+        buffer = new Hashtable<Integer, UserData>();
 
     }
 
@@ -46,11 +49,20 @@ public class PersistenceManager {
 
     public void commit(int taid) {
         // TODO handle commits
+
+        // set commit to true in buffer for taid
+        Collection<UserData> entries = buffer.values();
+        for (UserData entry : entries) {
+            if(entry.getTaid() == taid ) {
+                entry.setCommitted(true);
+            }
+        }
+
     }
 
     public void write(int taid, int pageid, String data) {
         // TODO handle writes of Transaction taid on page pageid with data
-        String userdata_filename = "Page_" + pageid + ".txt";
+
         try {
             logSequenceNumber = readLSN() + 1;
             String lsn = String.format("%04d", logSequenceNumber);
@@ -59,24 +71,59 @@ public class PersistenceManager {
             fw.write(lsn + ", " + taid +", " + pageid + ", " + data +"\n");//appends the string to the file
             fw.close();
 
-
+            /*
             // new user data page
             FileWriter userPage = new FileWriter("Logs/UserData/"+userdata_filename);
             userPage.write(lsn + ", " + data);
             userPage.close();
+
+
+             */
+
+            // write to buffer taid as key in hashtable
+            UserData userData = new UserData(logSequenceNumber, taid, pageid, data);
+            buffer.put(logSequenceNumber, userData);
             // wait for random * 100 milliseconds
             int time = (int) (Math.random() * (500 - 100) + 100);
             Thread.sleep(time);
 
-
-
-            // write to buffer taid as key in hashtable
-            UserData userData = new UserData(logSequenceNumber, data);
-            buffer.put(logSequenceNumber, userData);
-
             // check buffer size
             if(buffer.size() > 5) {
-                //System.out.println("buffer full");
+                Iterator<Map.Entry<Integer, UserData>> iterator = buffer.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<Integer, UserData> entry = iterator.next();
+
+                    if(entry.getValue().getCommitted() == true) {
+                        int key = entry.getKey();
+                        String userdata_filename = "Page_" + entry.getValue().getPageid() + ".txt";
+                        FileWriter userPage = new FileWriter("Logs/UserData/" + userdata_filename);
+                        String current_lsn = String.format("%04d", entry.getValue().getLsn());
+                        userPage.write( current_lsn + ", " + entry.getValue().getData());
+                        userPage.close();
+
+                        iterator.remove();
+                    }
+                }
+
+                /*
+                Collection<UserData> entries = buffer.values();
+                for (UserData entry : entries) {
+                    if(entry.getCommitted() == true) {
+                        // new user data page
+                        FileWriter userPage = new FileWriter("Logs/UserData/"+userdata_filename);
+                        userPage.write(lsn + ", " + data);
+                        userPage.close();
+
+                        // delete from buffer
+                        System.out.println("lsn: "+entry.getLsn());
+
+                        //System.out.println("key: "+entry.getKey());
+                        buffer.remove(entry.getLsn());
+
+                    }
+                }*/
+
+
             }
 
         } catch (IOException e) {
@@ -87,6 +134,7 @@ public class PersistenceManager {
         }
 
     }
+
 
     public int readLSN() {
         String filePath = "Logs/log_data.txt";

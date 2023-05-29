@@ -54,11 +54,12 @@ public class ClientManager {
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
+                /*
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
-                .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement());
+                .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())*/;
 
         Client client2 = new Client(clientid++, schedule2);
         client2.toggleClientDebugMessages();
@@ -67,7 +68,7 @@ public class ClientManager {
         client1.start();
         client2.start();
 
-
+/*
         for(int i = clientid+1; i < 10; i++) {
             clientid++;
             int minPageClient = i * 10;
@@ -87,6 +88,8 @@ public class ClientManager {
 
             client.start();
         }
+
+ */
 
 
     }
