@@ -49,7 +49,7 @@ public class ClientManager {
 
         // Creating Client 2 (Pages 20 - 39)
         int minPageClient2 = 20;
-        int maxPageClient2 = 40;
+        int maxPageClient2 = 30;
         Schedule schedule2 = Schedule.createSchedule()
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
                 .addOperation(rnd.nextInt(minPageClient2, maxPageClient2), exampleData.getRandomElement())
@@ -63,9 +63,31 @@ public class ClientManager {
         Client client2 = new Client(clientid++, schedule2);
         client2.toggleClientDebugMessages();
 
-
         // Start the clients
         client1.start();
         client2.start();
+
+
+        for(int i = clientid+1; i < 10; i++) {
+            clientid++;
+            int minPageClient = i * 10;
+            int maxPageClient = i * 10 + 10;
+            Schedule schedule = Schedule.createSchedule()
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement())
+                    .addOperation(rnd.nextInt(minPageClient, maxPageClient), exampleData.getRandomElement());
+
+            Client client = new Client(clientid, schedule);
+            client.toggleClientDebugMessages();
+
+            client.start();
+        }
+
+
     }
 }

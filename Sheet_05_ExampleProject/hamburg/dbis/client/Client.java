@@ -42,6 +42,7 @@ public class Client extends Thread {
         if (_showDebug)
             System.out.println("[Debug - Client " + _clientID + "]    Attempting to begin Transaction");
         int taid = _pm.beginTransaction();
+        System.out.println(taid);
 
         for (Operation op : _schedule) {
 
