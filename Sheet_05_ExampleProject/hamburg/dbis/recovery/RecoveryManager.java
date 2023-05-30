@@ -2,10 +2,7 @@ package hamburg.dbis.recovery;
 
 import hamburg.dbis.persistence.UserData;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class RecoveryManager {
@@ -48,22 +45,43 @@ public class RecoveryManager {
                 lines.add(line);
             }
 
+            List<String> committedTaids = new ArrayList<>();
+
             // Iterate through lines in reverse order
             Collections.reverse(lines);
             for (String currentLine : lines) {
-                List<String> substrings = new ArrayList<>();
 
-                String[] tokens = currentLine.split(",");
+                String[] splitArray = currentLine.split(",\\s*");
 
-                for (int i = 1; i < tokens.length; i++) {
-                    substrings.add(tokens[i]);
+                if (committedTaids.contains(splitArray[1])) {
+                    // add to presistence
+                    //System.out.println(currentLine);
+
+                    // write in DB
+                    if(!currentLine.contains("EOT")) {
+                        String userdata_filename = "Page_" + splitArray[2] + ".txt";
+                        FileWriter userPage = new FileWriter("Logs/UserData/" + userdata_filename);
+                        String current_lsn = splitArray[0];
+                        String data = "";
+                        for (int i = 3; i < splitArray.length; i++) {
+                            data = data + ", " + splitArray[i];
+                        }
+                        userPage.write(current_lsn + ", " + data);
+                        userPage.close();
+                    }
                 }
 
-                for (String substring : substrings) {
-                    System.out.println(substring);
-                    // Perform any desired operations with the substring
+
+                // update taid
+                if (currentLine.contains("EOT")) {
+                    //String[] splitArray = currentLine.split(",\\s*");
+                    committedTaids.add(splitArray[1]);
                 }
+
             }
+
+
+
         } catch (FileNotFoundException ex) {
             throw new RuntimeException(ex);
         } catch (IOException ex) {
