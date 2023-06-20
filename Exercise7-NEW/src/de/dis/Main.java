@@ -1,13 +1,16 @@
 package de.dis;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 
 public class Main {
+
+
 
     public void createWarehouse() throws SQLException, InterruptedException {
         // Setup
@@ -34,14 +37,27 @@ public class Main {
 
         String csvFilePath = "";
 
-        //FileReader fileReader = new FileReader(csvFilePath);
-        //CSVReader csvReader = new CSVReaderBuilder(fileReader).withSkipLines(1).build()) {
+        List<List<String>> records = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("book.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                records.add(Arrays.asList(values));
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(records);
     }
 
 
     public static void main(String[] args) throws SQLException, InterruptedException {
         Main mainObject = new Main();
         mainObject.createWarehouse();
+
+        mainObject.fillWarehouseFromCSV();
 
     }
 
