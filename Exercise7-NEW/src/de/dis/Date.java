@@ -69,7 +69,7 @@ public class Date {
     }
 
     public void save() {
-        String SQL = "INSERT INTO date(date,year,quarter,month,dayofyear) " + "VALUES(?,?,?,?,?)";
+        String SQL = "INSERT INTO date(date,year,quarter,month,dayofyear,dateid) " + "VALUES(?,?,?,?,?,?)";
 
         try {
             Connection con = DbConnectionManager.getInstance().getConnection();
@@ -80,6 +80,7 @@ public class Date {
             ps.setLong(3, getQuarter());
             ps.setLong(4, getMonth());
             ps.setLong(5, getDayofyear());
+            ps.setLong(6, getDateid());
             ps.addBatch();
 
             try {
@@ -87,7 +88,7 @@ public class Date {
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    setDateid(rs.getInt(1));
+                    //setDateid(rs.getInt(1));
                     System.out.printf("new date %s with id %d inserted!%n", this.date, this.dateid);
 
                 }

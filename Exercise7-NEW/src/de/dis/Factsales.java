@@ -71,7 +71,7 @@ public class Factsales implements Serializable {
     }
 
     public void save() {
-        String SQL = "INSERT INTO sales_fact(dateid,shopid,articleid,soldamount,revenue) " + "VALUES(?,?,?,?,?)";
+        String SQL = "INSERT INTO sales_fact(dateid,shopid,articleid,soldamount,revenue, salesid) " + "VALUES(?,?,?,?,?,?)";
 
         try {
             Connection con = DbConnectionManager.getInstance().getConnection();
@@ -82,6 +82,7 @@ public class Factsales implements Serializable {
             ps.setLong(3, getArticleid());
             ps.setLong(4, getSoldamount());
             ps.setDouble(5, getRevenue());
+            ps.setLong(6, getSalesid());
             ps.addBatch();
 
             try {
@@ -89,7 +90,7 @@ public class Factsales implements Serializable {
                 ps.executeUpdate();
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    setDateid(rs.getInt(1));
+                    //setDateid(rs.getInt(1));
                 }
             } catch (SQLException e) {
                 System.out.println("Error message: " + e.getMessage());

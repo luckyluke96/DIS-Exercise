@@ -16,6 +16,8 @@ import java.util.List;
 public class DataStaging {
     private final DataManager data_manager = new DataManager();
 
+    public long dateID;
+
     // load data from data manager to data warehouse
     public void loadData() {
         ArrayList<Factsales> factsales;
@@ -35,6 +37,7 @@ public class DataStaging {
 
         for (int counter = row_counter; counter < factsales.size(); counter++) {
             // insert sale item to the data warehouse db one by one
+            factsales.get(counter).setSalesid(counter);
             factsales.get(counter).save();
         }
     }
@@ -123,6 +126,7 @@ public class DataStaging {
     }
 
     private long createDate(String date, int[] splitted_date) {
+        dateID++;
         long date_id;
 
         Date new_date = new Date();
@@ -131,6 +135,9 @@ public class DataStaging {
         new_date.setQuarter(splitted_date[1]);
         new_date.setMonth(splitted_date[2]);
         new_date.setDayofyear(splitted_date[3]);
+
+        new_date.setDateid(dateID);
+
         new_date.save();
         date_id = new_date.getDateid();
 
